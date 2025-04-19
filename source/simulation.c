@@ -63,7 +63,7 @@ void simulate(void *param)
     {
         int next[X * Y];
         bool moved[X * Y];
-        bzero(next, X * Y * sizeof(int));
+        memcpy(next, data->pixels, X * Y * sizeof(int));
         memset(moved, false, X * Y * sizeof(bool));
 
         // int *curr_ptr = current;

@@ -15,7 +15,7 @@ t_data *init_data()
 		return NULL;
 	}
 	bzero(data, sizeof(t_data));
-	data->speed = 1;
+	data->speed = 5;
 
 	// mlx stuff
 	data->mlx = mlx_init(X, Y, "Pixelator", true);
