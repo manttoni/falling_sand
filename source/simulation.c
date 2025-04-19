@@ -21,7 +21,7 @@ int max(int a, int b)
 
 int flow(int *pixels, int i)
 {
-    if (i - X >= 0)
+    if (is_flowing(pixels[i]) && i - X >= 0)
         if (pixels[i] < pixels[i - X])
             return i - X;
 
@@ -32,12 +32,12 @@ int flow(int *pixels, int i)
     else if (i % Y == 0)
         one = 1;
 
-    if (i - X + one >= 0 && i - X + one < X * Y)
+    if (is_flowing(pixels[i]) && i - X + one >= 0 && i - X + one < X * Y)
         if (pixels[i] < pixels[i - X + one])
             return i - X + one;
 
     if (i + one >= 0 && i + one < X * Y)
-        if (is_liquid(pixels[i + one]) && pixels[i] < pixels[i + one])
+        if (is_flowing(pixels[i + one]) && pixels[i] < pixels[i + one])
             return i + one;
 
     return i;
@@ -50,9 +50,8 @@ void simulate(void *param)
     int indices[X * Y];
     for (int i = 0; i < X * Y; ++i)
         indices[i] = i;
-    
-    // Fisher–Yates shuffle
-    for (int i = X * Y - 1; i > 0; --i) {
+    for (int i = X * Y - 1; i > 0; --i)
+    {
         int j = rand() % (i + 1);
         int tmp = indices[i];
         indices[i] = indices[j];
@@ -65,9 +64,6 @@ void simulate(void *param)
         bool moved[X * Y];
         memcpy(next, data->pixels, X * Y * sizeof(int));
         memset(moved, false, X * Y * sizeof(bool));
-
-        // int *curr_ptr = current;
-        // int *next_ptr = next;
 
         for (int i = X * Y - 1; i >= 0; --i)
         {

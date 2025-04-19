@@ -28,5 +28,7 @@ uint32_t    get_pixel_color(pixel_type type);
 t_neighbors get_neighbors(int *pixels, int i);
 pixel_type  neighboring(t_neighbors nei, pixel_type type);
 bool        is_liquid(pixel_type type);
+bool        is_gas(pixel_type type);
+bool        is_flowing(pixel_type type);
 
 #endif

@@ -72,3 +72,13 @@ bool is_liquid(pixel_type type)
 {
     return type == WATER || type == OIL;
 }
+
+bool is_gas(pixel_type type)
+{
+    return type == VOID;
+}
+
+bool is_flowing(pixel_type type)
+{
+    return is_liquid(type) || is_gas(type);
+}
