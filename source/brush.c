@@ -3,7 +3,7 @@
 #include "../include/pixel.h"
 #include <math.h>
 
-void paint(int *pixels, t_brush *brush, int mouse_x, int mouse_y)
+void paint(uint32_t *pixels, t_brush *brush, int mouse_x, int mouse_y)
 {
     for(int y = mouse_y - brush->size; y <= mouse_y + brush->size; ++y)
     {
@@ -17,8 +17,8 @@ void paint(int *pixels, t_brush *brush, int mouse_x, int mouse_y)
 
             if (hypot(mouse_y - y, mouse_x - x) <= brush->size)
             {
-                int *pixel = get_pixel(pixels, x, y);
-                *pixel = brush->type;
+                uint32_t *p = get_pixel(pixels, x, y);
+                *p = pixel(1, 0, 0, brush->type);
             }
         }
     }

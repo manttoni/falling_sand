@@ -9,7 +9,7 @@ typedef struct s_brush
     pixel_type  type;
 }   t_brush;
 
-void paint(int *pixels, t_brush *brush, int mouse_x, int mouse_y);
+void paint(uint32_t *pixels, t_brush *brush, int mouse_x, int mouse_y);
 void select_next_type(t_brush *brush);
 void select_previous_type(t_brush *brush);
 

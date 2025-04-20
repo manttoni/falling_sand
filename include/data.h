@@ -9,7 +9,7 @@ typedef struct s_data
 {
     mlx_t       *mlx;
     mlx_image_t *image;
-    int         *pixels;
+    uint32_t    *pixels;
     t_brush     *brush;
     int         speed;
 }   t_data;

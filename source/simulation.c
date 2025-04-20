@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void update_image(mlx_image_t *image, int *pixels)
+void update_image(mlx_image_t *image, uint32_t *pixels)
 {
     for (int i = 0; i < X * Y; ++i)
     {
@@ -19,26 +19,60 @@ int max(int a, int b)
     return b;
 }
 
-int flow(int *pixels, int i)
+// Decide where pixels[i] pixel will move based on its velocity and type and density
+int move(uint32_t *pixels, int i)
 {
-    if (is_flowing(pixels[i]) && i - X >= 0)
-        if (pixels[i] < pixels[i - X])
-            return i - X;
+    if (get_pixel_type(pixels[i]) == VOID)
+        return i;
+    uint32_t *pixel = &pixels[i];
+    change_Y_velocity(pixel, GRAVITY);
+    int vx = get_X_velocity(*pixel);
+    int vy = get_Y_velocity(*pixel);
+    int mass = get_mass(*pixel);
 
-    int one = rand() % 2 == 0 ? 1 : -1;
+    if (i == 0)
+        printf("Velocity:%d\n", vy);
 
-    if (i % Y == X - 1)
-        one = -1;
-    else if (i % Y == 0)
-        one = 1;
-
-    if (is_flowing(pixels[i]) && i - X + one >= 0 && i - X + one < X * Y)
-        if (pixels[i] < pixels[i - X + one])
-            return i - X + one;
-
-    if (i + one >= 0 && i + one < X * Y)
-        if (is_flowing(pixels[i + one]) && pixels[i] < pixels[i + one])
-            return i + one;
+    // int density = get_density(pixels[i]);
+    // pixel_type type = get_pixel_type(pixels[i]);
+    
+    int x = 0, y = 0; // how much pixel has moved
+    //int dx = vx == 0 ? 0 : vx / abs(vx); // x movement direction
+    int dy = vy == 0 ? 0 : vy / abs(vy); // y movement direction
+    while(x != vx || y != vy)
+    {
+        bool moved = false;
+        int mass_diff;
+        // horizontal
+        // if (x != vx // dont move if already moved enough
+        //     && i + dx >= 0 && i + dx < X * Y) // bounds
+        // {
+        //     mass_diff = get_mass(pixels[i + dx]) - mass;
+        //     if (mass_diff < 0 // can displace only lighter materials
+        //         && row(i) == row(i + dx)) // on the same row
+        //     {
+        //         i += dx; // update index
+        //         x += dx; // update movement in X
+        //         //change_X_velocity(pixel, dx * mass_diff); // decrease velocity
+        //         moved = true;
+        //     }
+        // }
+        // vertical
+        if (y != vy && i + dy * X >= 0 && i + dy * X < X * Y)
+        {
+            mass_diff = get_mass(pixels[i + dy * X]) - mass;
+            if (mass_diff < 0)
+            {
+                i += dy * X;
+                pixel = &pixels[i];
+                y += dy;
+                //change_Y_velocity(pixel, dy * mass_diff);
+                moved = true;
+            }
+        }
+        if (!moved)
+            break;
+    }
 
     return i;
 }
@@ -60,18 +94,19 @@ void simulate(void *param)
 
     for (int j = 0; j < data->speed; ++j)
     {
-        int next[X * Y];
+        uint32_t next[X * Y];
         bool moved[X * Y];
-        memcpy(next, data->pixels, X * Y * sizeof(int));
+        memcpy(next, data->pixels, X * Y * sizeof(uint32_t));
         memset(moved, false, X * Y * sizeof(bool));
 
         for (int i = X * Y - 1; i >= 0; --i)
         {
-            int to = indices[i];
-            if (moved[to] == true)
-                continue;
-            int from = flow(data->pixels, to);
+            int from = indices[i];
+            //printf("Moving pixel: %d", data->pixels[from]);
             if (moved[from] == true)
+                continue;
+            int to = move(data->pixels, from);
+            if (moved[to] == true)
                 continue;
 
             next[to] = data->pixels[from];

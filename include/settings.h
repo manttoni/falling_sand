@@ -10,4 +10,6 @@
 #define MUD_COLOR           0x4B2F1AFF
 #define OIL_COLOR           0x0F0B2F1B
 
+#define GRAVITY	1
+
 #endif

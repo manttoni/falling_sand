@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <strings.h>
 #include <string.h>
+#include <stdio.h>
 
 t_data *init_data()
 {
@@ -15,7 +16,7 @@ t_data *init_data()
 		return NULL;
 	}
 	bzero(data, sizeof(t_data));
-	data->speed = 2;
+	data->speed = 1;
 
 	// mlx stuff
 	data->mlx = mlx_init(X, Y, "Pixelator", true);
@@ -36,14 +37,16 @@ t_data *init_data()
 	memset(data->image->pixels, BACKGROUND_COLOR, X * Y * sizeof(int));
 
 	// non-mlx stuff
-	data->pixels = malloc(X * Y * sizeof(int));
+	data->pixels = malloc(X * Y * sizeof(uint32_t));
 	if (data->pixels == NULL)
 	{
 		free_data(data);
 		log_message(FAILURE, "malloc failed");
 		return NULL;
 	}
-	memset(data->pixels, VOID, X * Y * sizeof(int));
+	for (int i = 0; i < X * Y; ++i)
+		data->pixels[i] = pixel(1, 0, 0, VOID); 
+	printf("a pixels has Y velocity of %d\n", get_Y_velocity(data->pixels[5]));
 
 	data->brush = malloc(sizeof(t_brush));
 	if (data->brush == NULL)

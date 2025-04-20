@@ -41,5 +41,5 @@ void scroll(double xdelta, double ydelta, void *param)
     else
         return;
 
-    printf("Brush type selected: %s\n", pixel_to_string(data->brush->type));
+    printf("Brush type selected: %s\n", pixel_to_string(data->brush->type & PIXEL_TYPE_MASK));
 }
