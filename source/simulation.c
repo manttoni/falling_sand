@@ -33,6 +33,15 @@ void trickle_effect(uint32_t *pixels, int i)
         change_X_velocity(&pixels[i], trickle);
 }
 
+void flow_effect(uint32_t *pixels, int i)
+{
+    int vx = get_X_velocity(pixels[i]);
+
+    if (vx == 0)
+        vx = (rand() % 2 == 0 ? 1 : -1);
+
+    change_X_velocity(&pixels[i], vx / abs(vx));
+}
 // Decide where pixels[i] pixel will move based on its velocity and type and density
 int move(uint32_t *pixels, int i)
 {
@@ -40,11 +49,26 @@ int move(uint32_t *pixels, int i)
         return i;
     uint32_t *pixel = &pixels[i];
     int mass = get_mass(*pixel);
+
+    // if there is something more or equally massive underneath, apply random horizontal velocity
     if (i + X < X * Y && get_mass(pixels[i + X]) >= mass)
-        trickle_effect(pixels, i);
+    {
+        // liquids get flow effect, other trickle down slopes
+        if (is_liquid(pixels[i]))
+            flow_effect(pixels, i);
+        else
+            trickle_effect(pixels, i);
+    }
+
+    // everything gets some velocity
     change_Y_velocity(pixel, GRAVITY);
+
     int vx = get_X_velocity(*pixel);
     int vy = get_Y_velocity(*pixel);
+
+    // friction
+    change_X_velocity(pixel, -vx / 10);
+    change_Y_velocity(pixel, -vy / 10);
 
     int x = 0, y = 0; // how much pixel has moved
     int dx = vx == 0 ? 0 : vx / abs(vx); // x movement direction
