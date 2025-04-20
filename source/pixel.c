@@ -2,7 +2,7 @@
 #include "../include/settings.h"
 #include <stdlib.h>
 
-uint32_t pixel(unsigned int density, unsigned int velocity_x, unsigned int velocity_y, pixel_type type)
+uint32_t new_pixel(unsigned int density, unsigned int velocity_x, unsigned int velocity_y, pixel_type type)
 {
     return density << 24 | (velocity_x + 127) << 16 | (velocity_y + 127) << 8 | type;
 }

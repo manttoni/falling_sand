@@ -45,7 +45,7 @@ t_data *init_data()
 		return NULL;
 	}
 	for (int i = 0; i < X * Y; ++i)
-		data->pixels[i] = pixel(1, 0, 0, VOID); 
+		data->pixels[i] = new_pixel(1, 0, 0, VOID); 
 	printf("a pixels has Y velocity of %d\n", get_Y_velocity(data->pixels[5]));
 
 	data->brush = malloc(sizeof(t_brush));

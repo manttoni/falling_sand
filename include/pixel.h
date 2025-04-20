@@ -46,6 +46,6 @@ int         get_density(uint32_t pixel);
 int         get_mass(uint32_t pixel);
 int         row(int i);
 int         col(int i);
-uint32_t    pixel(unsigned int density, unsigned int velocity_x, unsigned int velocity_y, pixel_type type);
+uint32_t    new_pixel(unsigned int density, unsigned int velocity_x, unsigned int velocity_y, pixel_type type);
 
 #endif

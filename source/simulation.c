@@ -19,44 +19,57 @@ int max(int a, int b)
     return b;
 }
 
+void trickle_effect(uint32_t *pixels, int i)
+{
+    int trickle;
+    if (i + 1 >= X * Y || row(i) != row(i + 1))
+        trickle = -1;
+    else if (i - 1 < 0 || row(i) != row(i - 1))
+        trickle = 1;
+    else
+        trickle = rand() % 2 == 0 ? 1 : -1;
+
+    if (i + trickle + X < X * Y && is_flowing(pixels[i + trickle + X]))
+        change_X_velocity(&pixels[i], trickle);
+}
+
 // Decide where pixels[i] pixel will move based on its velocity and type and density
 int move(uint32_t *pixels, int i)
 {
     if (get_pixel_type(pixels[i]) == VOID)
         return i;
     uint32_t *pixel = &pixels[i];
+    int mass = get_mass(*pixel);
+    if (i + X < X * Y && get_mass(pixels[i + X]) >= mass)
+        trickle_effect(pixels, i);
     change_Y_velocity(pixel, GRAVITY);
     int vx = get_X_velocity(*pixel);
     int vy = get_Y_velocity(*pixel);
-    int mass = get_mass(*pixel);
 
-    if (i == 0)
-        printf("Velocity:%d\n", vy);
-
-    // int density = get_density(pixels[i]);
-    // pixel_type type = get_pixel_type(pixels[i]);
-    
     int x = 0, y = 0; // how much pixel has moved
-    //int dx = vx == 0 ? 0 : vx / abs(vx); // x movement direction
+    int dx = vx == 0 ? 0 : vx / abs(vx); // x movement direction
     int dy = vy == 0 ? 0 : vy / abs(vy); // y movement direction
     while(x != vx || y != vy)
     {
         bool moved = false;
         int mass_diff;
+
         // horizontal
-        // if (x != vx // dont move if already moved enough
-        //     && i + dx >= 0 && i + dx < X * Y) // bounds
-        // {
-        //     mass_diff = get_mass(pixels[i + dx]) - mass;
-        //     if (mass_diff < 0 // can displace only lighter materials
-        //         && row(i) == row(i + dx)) // on the same row
-        //     {
-        //         i += dx; // update index
-        //         x += dx; // update movement in X
-        //         //change_X_velocity(pixel, dx * mass_diff); // decrease velocity
-        //         moved = true;
-        //     }
-        // }
+        if (x != vx // dont move if already moved enough
+            && i + dx >= 0 && i + dx < X * Y) // bounds
+        {
+            mass_diff = get_mass(pixels[i + dx]) - mass;
+            if (mass_diff < 0 // can displace only lighter materials
+                && row(i) == row(i + dx)) // on the same row
+            {
+                i += dx; // update index
+                pixel = &pixels[i];
+                x += dx; // update movement in X
+                change_X_velocity(pixel, dx * mass_diff); // decrease velocity
+                moved = true;
+            }
+        }
+
         // vertical
         if (y != vy && i + dy * X >= 0 && i + dy * X < X * Y)
         {
@@ -66,12 +79,15 @@ int move(uint32_t *pixels, int i)
                 i += dy * X;
                 pixel = &pixels[i];
                 y += dy;
-                //change_Y_velocity(pixel, dy * mass_diff);
+                change_Y_velocity(pixel, dy * mass_diff);
                 moved = true;
             }
         }
         if (!moved)
+        {
+            *pixel = new_pixel(get_density(*pixel), 0, 0, get_pixel_type(*pixel));
             break;
+        }
     }
 
     return i;

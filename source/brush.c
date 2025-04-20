@@ -2,6 +2,7 @@
 #include "../include/settings.h"
 #include "../include/pixel.h"
 #include <math.h>
+#include <stdlib.h>
 
 void paint(uint32_t *pixels, t_brush *brush, int mouse_x, int mouse_y)
 {
@@ -15,10 +16,10 @@ void paint(uint32_t *pixels, t_brush *brush, int mouse_x, int mouse_y)
             if (x < 0 || x >= X)
                 continue;
 
-            if (hypot(mouse_y - y, mouse_x - x) <= brush->size)
+            if (hypot(mouse_y - y, mouse_x - x) <= brush->size && rand() % 3 == 0)
             {
                 uint32_t *p = get_pixel(pixels, x, y);
-                *p = pixel(1, 0, 0, brush->type);
+                *p = new_pixel(1, 0, 0, brush->type);
             }
         }
     }
