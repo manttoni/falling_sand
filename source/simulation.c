@@ -67,8 +67,11 @@ int move(uint32_t *pixels, int i)
     int vy = get_Y_velocity(*pixel);
 
     // friction
-    change_X_velocity(pixel, -vx / 10);
-    change_Y_velocity(pixel, -vy / 10);
+    change_X_velocity(pixel, -vx * 0.9);
+    change_Y_velocity(pixel, -vy * 0.1);
+
+    vx = get_X_velocity(*pixel);
+    vy = get_Y_velocity(*pixel);
 
     int x = 0, y = 0; // how much pixel has moved
     int dx = vx == 0 ? 0 : vx / abs(vx); // x movement direction
